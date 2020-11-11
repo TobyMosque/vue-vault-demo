@@ -5,7 +5,7 @@ export default class Vault {
     this.state = state
   }
 
-  __createStateIfNotExists (namespace, { data }) {
+  registerState (namespace, { data }) {
     if (!this.state[namespace]) {
       const state = Vue.observable(typeof data === 'function' ? data() : data)
       this.state[namespace] = typeof state === 'function' ? state() : state
@@ -14,7 +14,7 @@ export default class Vault {
 
   registerModule (namespace, { data }) {
     if (!this.state[namespace]) {
-      this.__createStateIfNotExists(namespace, { data })
+      this.registerState(namespace, { data })
     }
   }
 

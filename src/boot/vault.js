@@ -10,7 +10,7 @@ export default inject(async ({ ssrContext }) => {
     const data = window.__VAULT_STATE__
     const keys = Object.keys(data)
     for (const key of keys) {
-      vault.registerModule(key, { data: data[key] })
+      vault.registerState(key, { data: data[key] })
     }
   }
   if (ssrContext) {
