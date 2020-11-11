@@ -12,8 +12,21 @@ export default class Vault {
     }
   }
 
-  registerModule (namespace, { data }) {
-    this.__createStateIfNotExists(namespace, { data })
+  registerModule (namespace, { data, ...props }) {
+    if (!this.state[namespace]) {
+      const self = this
+      this.__createStateIfNotExists(namespace, { data })
+      const options = {
+        name: `module-${namespace}`,
+        data () {
+          return self.state[namespace]
+        },
+        render: h => h('div'),
+        ...props
+      }
+      this[namespace] = new Vue(options)
+      this[namespace].$mount()
+    }
   }
 
   unregisterModule (namespace) {
