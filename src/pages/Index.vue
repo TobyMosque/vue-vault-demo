@@ -36,7 +36,6 @@ export default Vault.page('page-index', {
     }
   },
   mounted () {
-    console.log(this.uid, this.$vault)
     setInterval(() => {
       this.uid = uid()
       this.$vault.app.newId()
