@@ -12,35 +12,14 @@ export default class Vault {
     }
   }
 
-  registerModule (namespace, { data, ...props }) {
+  registerModule (namespace, { data }) {
     if (!this.state[namespace]) {
-      const self = this
       this.__createStateIfNotExists(namespace, { data })
-      const options = {
-        name: `module-${namespace}`,
-        data () {
-          return self.state[namespace]
-        },
-        render: h => h('div'),
-        ...props
-      }
-      this[namespace] = new Vue(options)
-      this[namespace].$mount()
     }
   }
 
   unregisterModule (namespace) {
-    const isRegistered = !!this[namespace]
-    if (isRegistered) {
-      const keys = Object.keys(this.getters)
-      for (const key of keys) {
-        if (key.startsWith(`${namespace}/`)) {
-          delete this.getters[key]
-        }
-      }
-      this.gettersMap.delete(namespace)
-      this[namespace].$destroy()
-      delete this[namespace]
+    if (!this.state[namespace]) {
       delete this.state[namespace]
     }
   }
