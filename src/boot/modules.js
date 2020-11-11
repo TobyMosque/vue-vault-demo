@@ -6,7 +6,7 @@ export default async ({ app }) => {
   vault.registerModule('app', {
     data () {
       return {
-        id: ''
+        uid: ''
       }
     }
   })
