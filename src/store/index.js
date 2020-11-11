@@ -1,7 +1,6 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
-
-Vue.use(Vuex)
+import Vault from 'src/services/vault'
+import global from './global'
 
 /*
  * If not building with SSR mode, you can
@@ -12,9 +11,13 @@ Vue.use(Vuex)
  * with the Store instance.
  */
 
+Vue.use(Vault)
+
 export default async function ({ ssrContext }) {
-  const Store = new Vuex.Store({
-    modules: {},
+  const Store = new Vault({
+    modules: {
+      global
+    },
 
     // enable strict mode (adds overhead!)
     // for dev mode only

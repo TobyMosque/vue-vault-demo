@@ -13,6 +13,12 @@
       <div class="col col-12">
         app reversed: {{$vault.app.reversed}}
       </div>
+      <div class="col col-12">
+        store state: {{storeUid}}
+      </div>
+      <div class="col col-12">
+        store getters: {{reversed}}
+      </div>
     </div>
   </q-page>
 </template>
@@ -39,11 +45,23 @@ export default Vault.page('page-index', {
     setInterval(() => {
       this.uid = uid()
       this.$vault.app.newId()
+      this.newId()
     }, 1000)
   },
   computed: {
+    storeUid () {
+      return this.$store.state.global.uid
+    },
     appId () {
       return this.$vault.state.app.uid
+    },
+    reversed () {
+      return this.$store.getters['global/reversed']
+    }
+  },
+  methods: {
+    newId () {
+      this.$store.dispatch('global/newId')
     }
   }
 })

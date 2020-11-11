@@ -1,8 +1,9 @@
 // make sure that boot is registered after the vault
 import { uid } from 'quasar'
 
-export default async ({ app }) => {
+export default async ({ app, store }) => {
   const vault = app.vault
+  store.configure()
   vault.registerModule('app', {
     data () {
       return {
@@ -23,4 +24,5 @@ export default async ({ app }) => {
 
   await new Promise(resolve => setTimeout(resolve, 1000))
   vault.app.newId()
+  store.dispatch('global/newId')
 }
