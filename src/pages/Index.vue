@@ -7,6 +7,12 @@
       <div class="col col-12">
         app: {{appId}}
       </div>
+      <div class="col col-12">
+        app direct: {{$vault.app.uid}}
+      </div>
+      <div class="col col-12">
+        app reversed: {{$vault.app.reversed}}
+      </div>
     </div>
   </q-page>
 </template>
@@ -33,6 +39,7 @@ export default Vault.page('page-index', {
     console.log(this.uid, this.$vault)
     setInterval(() => {
       this.uid = uid()
+      this.$vault.app.newId()
     }, 1000)
   },
   computed: {

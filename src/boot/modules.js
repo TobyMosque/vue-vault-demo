@@ -6,11 +6,21 @@ export default async ({ app }) => {
   vault.registerModule('app', {
     data () {
       return {
-        id: ''
+        uid: ''
+      }
+    },
+    computed: {
+      reversed () {
+        return this.uid.split('').reverse().join('')
+      }
+    },
+    methods: {
+      newId () {
+        this.uid = uid()
       }
     }
   })
 
   await new Promise(resolve => setTimeout(resolve, 1000))
-  vault.state.app.uid = uid()
+  vault.app.newId()
 }
