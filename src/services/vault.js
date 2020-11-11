@@ -13,21 +13,13 @@ export default class Vault {
   }
 
   registerModule (namespace, { data }) {
-    this.__createStateIfNotExists(namespace, { data })
+    if (!this.state[namespace]) {
+      this.__createStateIfNotExists(namespace, { data })
+    }
   }
 
   unregisterModule (namespace) {
-    const isRegistered = !!this[namespace]
-    if (isRegistered) {
-      const keys = Object.keys(this.getters)
-      for (const key of keys) {
-        if (key.startsWith(`${namespace}/`)) {
-          delete this.getters[key]
-        }
-      }
-      this.gettersMap.delete(namespace)
-      this[namespace].$destroy()
-      delete this[namespace]
+    if (!this.state[namespace]) {
       delete this.state[namespace]
     }
   }
