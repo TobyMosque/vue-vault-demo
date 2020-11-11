@@ -7,13 +7,8 @@ import Vault from 'src/services/vault'
 export default inject(async ({ ssrContext }) => {
   const vault = new Vault()
   if (!ssrContext) {
-    const data = window.__VAULT_STATE__
-    const keys = Object.keys(data)
-    for (const key of keys) {
-      vault.registerState(key, { data: data[key] })
-    }
-  }
-  if (ssrContext) {
+    vault.replaceState(window.__VAULT_STATE__)
+  } else {
     ssrContext.rendered = () => {
       ssrContext.vaultState = JSON.stringify(vault.state)
     }

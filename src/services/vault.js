@@ -37,6 +37,15 @@ export default class Vault {
     }
   }
 
+  replaceState (data) {
+    if (process.env.CLIENT) {
+      const keys = Object.keys(data)
+      for (const key of keys) {
+        this.registerState(key, { data: data[key] })
+      }
+    }
+  }
+
   static page (namespace, { data, destroyed, preFetch, ...options }) {
     return {
       async preFetch (context) {
