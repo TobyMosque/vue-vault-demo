@@ -1,68 +1,70 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="row items-center justify-evenly">
+    <example-component
+      title="Example component"
+      active
+      :todos="todos"
+      :meta="meta"
+    ></example-component>
     <div class="row">
-      <div class="col col-12">
-        page: {{uid}}
+      <div class="col-12">
+        <q-input v-model="$vault.test1.msg" outlined label="Model"></q-input>
       </div>
-      <div class="col col-12">
-        app: {{appId}}
+      <div class="col-12">
+        State: {{$vault.state.test1.msg}}
       </div>
-      <div class="col col-12">
-        app direct: {{$vault.app.uid}}
-      </div>
-      <div class="col col-12">
-        app reversed: {{$vault.app.reversed}}
-      </div>
-      <div class="col col-12">
-        store state: {{storeUid}}
-      </div>
-      <div class="col col-12">
-        store getters: {{reversed}}
+      <div class="col-12">
+        Computed: {{$vault.test1.reverseMsg}}
       </div>
     </div>
   </q-page>
 </template>
 
-<script>
-import Vault from 'src/services/vault'
-import { uid } from 'quasar'
+<script lang="ts">
+import { Todo, Meta } from 'components/models'
+import ExampleComponent from 'components/CompositionComponent.vue'
+import { defineComponent, ref } from 'vue'
 
-export default Vault.page('page-index', {
+export default defineComponent({
   name: 'PageIndex',
-  async preFetch ({ data, axios, store, currentRoute, redirect }) {
-    // const { data } = await this.$axios.get('...' + this.$route.params.id)
-    // this.uid = data
-    // the promise with setTimeout tries to mimic a http request, like the above one.
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    data.uid = uid()
-  },
-  data () {
-    return {
-      uid: ''
-    }
+  components: { ExampleComponent },
+  setup () {
+    const todos = ref<Todo[]>([
+      {
+        id: 1,
+        content: 'ct1'
+      },
+      {
+        id: 2,
+        content: 'ct2'
+      },
+      {
+        id: 3,
+        content: 'ct3'
+      },
+      {
+        id: 4,
+        content: 'ct4'
+      },
+      {
+        id: 5,
+        content: 'ct5'
+      }
+    ])
+    const meta = ref<Meta>({
+      totalCount: 1200
+    })
+    return { todos, meta }
   },
   mounted () {
-    setInterval(() => {
-      this.uid = uid()
-      this.$vault.app.newId()
-      this.newId()
-    }, 1000)
-  },
-  computed: {
-    storeUid () {
-      return this.$store.state.global.uid
-    },
-    appId () {
-      return this.$vault.state.app.uid
-    },
-    reversed () {
-      return this.$store.getters['global/reversed']
-    }
-  },
-  methods: {
-    newId () {
-      this.$store.dispatch('global/newId')
-    }
+    console.log('page', {
+      t1Computed: this.$vault.test1.reverseMsg,
+      t1Method: this.$vault.test1.reverse(this.$vault.state.test1.msg),
+      t1State: this.$vault.state.test1.msg,
+      t2Computed: this.$vault.test2.reverseMsg,
+      t2Method: this.$vault.test2.reverse(this.$vault.state.test2.msg),
+      t2State: this.$vault.state.test2.msg
+    })
   }
 })
 </script>

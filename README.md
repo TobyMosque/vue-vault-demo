@@ -1,4 +1,4 @@
-# Quasar App (ssr-example)
+# Quasar App (vault-v2)
 
 A Quasar Framework app
 
