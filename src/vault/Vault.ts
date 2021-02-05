@@ -1,19 +1,28 @@
-import { App, createApp, h, ComponentOptionsWithoutProps, ComponentPublicInstance, reactive } from 'vue'
+import {
+  App,
+  h,
+  reactive,
+  createApp,
+  defineComponent,
+  ComponentOptionsWithoutProps,
+  ComponentPublicInstance
+} from 'vue'
+
+import { preFetch as $preFetch } from 'quasar/wrappers'
+import { PreFetchOptions } from '@quasar/app'
 
 type Modules = Record<string, ComponentOptionsWithoutProps>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-class VaultApps {
+export class VaultApps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-undef
   [key: string]: unknown | ComponentPublicInstance
 }
 
-interface VaultState {
+export interface VaultState {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-undef
   [key: string]: unknown
 }
-
-export { VaultApps, VaultState }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-undef
 export default class Vault extends VaultApps {
@@ -96,4 +105,55 @@ export default class Vault extends VaultApps {
       }
     }
   }
+}
+
+export interface VaultPreFetchOptions extends PreFetchOptions<unknown> {
+  vault : Vault
+}
+
+export type VaultPrefetchCallback = (
+  options: VaultPreFetchOptions
+// eslint-disable-next-line @typescript-eslint/ban-types
+) => void | Promise<void> | Promise<{}>
+
+declare module '@vue/runtime-core' {
+  interface ComponentCustomOptions {
+    vaultPreFetch?: VaultPrefetchCallback;
+  }
+}
+
+export function defineVaultComponent (namespace: string, options: ComponentOptionsWithoutProps) {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { preFetch, vaultPreFetch, computed, methods, data, unmounted, ...otherOptions } = options
+  const $options : ComponentOptionsWithoutProps = {
+    preFetch: $preFetch(async (options) => {
+      const { store } = options
+      const vault = store.$vault
+      if (!vault.state[namespace]) {
+        vault.registerModule(namespace, { data, computed, methods })
+      }
+      if (preFetch) {
+        await preFetch(options)
+      }
+      if (vaultPreFetch) {
+        await vaultPreFetch({ vault, ...options })
+      }
+    }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data () : any {
+      return this.$vault.state[namespace]
+    },
+    unmounted () {
+      this.$vault.unregisterModule(namespace)
+      if (unmounted && preFetch) {
+        unmounted.bind(this)()
+      }
+    },
+    computed,
+    methods,
+    ...otherOptions
+  }
+
+  const component = defineComponent($options)
+  return component
 }
